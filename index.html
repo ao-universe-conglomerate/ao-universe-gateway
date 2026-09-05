@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AO Universe — Library World Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ao-black-bg: #000000;
+            --ao-void-black: #0A0A10;
+            --xyz-cyan: #00eaff;
+            --in-build-magenta: #ff00c8;
+            --glow-gold: #d8ae55;
+            --font-display: "Space Mono", monospace;
+            --font-body: "Inter", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--ao-black-bg);
+            color: #ffffff;
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle, #ffffff 0.8px, transparent 1.3px),
+                radial-gradient(circle, var(--glow-gold) 1px, transparent 1.6px),
+                radial-gradient(circle, rgba(0, 234, 255, 0.3) 0.5px, transparent 1.2px);
+            background-size: 140px 140px, 240px 240px, 310px 310px;
+            background-position: 0 0, 40px 60px, 150px 180px;
+            opacity: 0.35;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .ambient-vortex {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 234, 255, 0.08) 0%, rgba(255, 0, 200, 0.03) 50%, transparent 70%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .portal-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+        }
+
+        .wallet-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 16, 0.85);
+            border: 1px solid rgba(0, 234, 255, 0.25);
+            border-radius: 12px;
+            padding: 15px 25px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 234, 255, 0.1);
+        }
+
+        .hud-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .gold-ac-coin {
+            width: 44px;
+            height: 44px;
+            background: radial-gradient(circle, #ffffff 10%, var(--glow-gold) 70%);
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--glow-gold);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font-display);
+            font-weight: bold;
+            color: #000000;
+            animation: coin-rotate 6s infinite linear;
+        }
+
+        @keyframes coin-rotate {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        .hud-text {
+            font-family: var(--font-display);
+        }
+
+        .hud-label {
+            font-size: 0.7rem;
+            color: var(--xyz-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .hud-balance {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .hud-balance span {
+            color: var(--glow-gold);
+        }
+
+        .hud-right-telemetry {
+            text-align: right;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            color: var(--glow-gold);
+        }
+
+        .hud-right-telemetry p {
+            opacity: 0.8;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .hero-portal {
+            position: relative;
+            background: var(--ao-void-black);
+            border: 1px solid rgba(0, 234, 255, 0.2);
+            border-radius: 24px;
+            height: 480px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin-bottom: 50px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .grid-plane {
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            height: 50%;
+            background-image: 
+                linear-gradient(90deg, rgba(0, 234, 255, 0.08) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(0, 234, 255, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: perspective(200px) rotateX(60deg);
+            transform-origin: bottom center;
+            opacity: 0.85;
+            z-index: 2;
+        }
+
+        .magenta-horizon {
+            position: absolute;
+            bottom: 45%;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: var(--in-build-magenta);
+            filter: blur(15px);
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        .triple-glow-ring {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .ring-outer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--xyz-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 25px var(--xyz-cyan), inset 0 0 15px var(--xyz-cyan);
+            animation: ring-pulse-1 4s infinite ease-in-out;
+        }
+
+        .ring-middle {
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            border: 2px solid var(--in-build-magenta);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--in-build-magenta), inset 0 0 10px var(--in-build-magenta);
+            animation: ring-pulse-2 4s infinite ease-in-out alternate;
+        }
+
+        .ring-inner {
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            border: 2px solid var(--glow-gold);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--glow-gold), inset 0 0 8px var(--glow-gold);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font-display);
+            font-weight: bold;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: #ffffff;
+            background: rgba(10, 10, 16, 0.9);
+            text-shadow: 0 0 10px var(--glow-gold);
+        }
+
+        @keyframes ring-pulse-1 {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 0.6; }
+        }
+
+        @keyframes ring-pulse-2 {
+            0%, 100% { transform: scale(0.95); opacity: 0.6; }
+            50% { transform: scale(1.03); opacity: 0.9; }
+        }
+
+        .triple-glow-ring:hover {
+            transform: scale(1.1);
+        }
+
+        .hero-text-block {
+            text-align: center;
+            margin-top: 25px;
+            z-index: 5;
+        }
+
+        .hero-text-block h2 {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-text-block p {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+            font-family: var(--font-display);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .quadrant-section {
+            background: rgba(10, 10, 16, 0.7);
+            border: 1px solid rgba(216, 174, 85, 0.12);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(216, 174, 85, 0.15);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tag-breathing {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            border: 1px solid;
+            padding: 3px 8px;
+            border-radius: 4px;
+            letter-spacing: 1.5px;
+        }
+
+        #farm-section {
+            border-color: rgba(0, 234, 255, 0.15);
+            animation: breathe-sassy 4.1s infinite alternate ease-in-out;
+        }
+        @keyframes breathe-sassy {
+            0% { box-shadow: 0 0 10px rgba(0, 234, 255, 0.05); }
+            100% { box-shadow: 0 0 25px rgba(0, 234, 255, 0.15); border-color: rgba(0, 234, 255, 0.35); }
+        }
+
+        .quest-board-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .quest-card {
+            background: linear-gradient(135deg, rgba(15, 22, 42, 0.6) 0%, rgba(10, 15, 31, 0.8) 100%);
+            border: 1px solid rgba(0, 234, 255, 0.12);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .quest-card:hover {
+            border-color: var(--xyz-cyan);
+            box-shadow: 0 0 20px rgba(0, 234, 255, 0.18);
+            transform: translateY(-3px);
+        }
+
+        .quest-top {
+            margin-bottom: 15px;
+        }
+
+        .quest-meta {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            color: var(--glow-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .quest-title {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .quest-desc {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .quest-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 12px;
+            margin-top: 15px;
+        }
+
+        .quest-yield {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            color: var(--glow-gold);
+            font-weight: bold;
+        }
+
+        .quest-btn {
+            background: transparent;
+            border: 1px solid var(--xyz-cyan);
+            color: #ffffff;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .quest-btn:hover {
+            background: var(--xyz-cyan);
+            color: #000000;
+            box-shadow: 0 0 10px var(--xyz-cyan);
+            font-weight: bold;
+        }
+
+        .quest-card.beta {
+            border-color: rgba(255, 0, 200, 0.15);
+        }
+        .quest-card.beta .quest-btn {
+            border-color: var(--in-build-magenta);
+            color: var(--in-build-magenta);
+        }
+        .quest-card.beta .quest-btn:hover {
+            background: var(--in-build-magenta);
+            color: #ffffff;
+            box-shadow: 0 0 10px var(--in-build-magenta);
+        }
+
+        #coloring-section {
+            border-color: rgba(216, 174, 85, 0.15);
+            animation: breathe-clifford 3.6s infinite alternate ease-in-out;
+        }
+        @keyframes breathe-clifford {
+            0% { box-shadow: 0 0 10px rgba(216, 174, 85, 0.05); }
+            100% { box-shadow: 0 0 25px rgba(216, 174, 85, 0.15); border-color: rgba(216, 174, 85, 0.35); }
+        }
+
+        .mount-scroller {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+        }
+
+        .mount-card {
+            flex-shrink: 0;
+            width: 210px;
+            background: rgba(10, 10, 16, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .mount-card:hover {
+            border-color: var(--glow-gold);
+            transform: scale(1.03);
+        }
+
+        .mount-canvas-frame {
+            height: 120px;
+            width: 100%;
+            border-radius: 8px;
+            background: #ffffff;
+            border: 1px solid rgba(216, 174, 85, 0.15);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .mount-line-art {
+            width: 80px;
+            height: 80px;
+            opacity: 0.85;
+            transition: transform 0.3s ease;
+        }
+        .mount-card:hover .mount-line-art {
+            transform: scale(1.1);
+        }
+
+        .mount-title {
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .mount-type {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            color: var(--xyz-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .mount-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .mount-btn {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.7rem;
+            padding: 6px 0;
+            border-radius: 4px;
+            text-decoration: none;
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .mount-btn.download-outline {
+            border-color: var(--glow-gold);
+            color: var(--glow-gold);
+        }
+
+        .mount-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .mount-btn.download-outline:hover {
+            background: var(--glow-gold);
+            color: #000000;
+            box-shadow: 0 0 10px rgba(216, 174, 85, 0.4);
+            font-weight: bold;
+        }
+
+        #house-section {
+            border-color: rgba(196, 181, 253, 0.15);
+            animation: breathe-pixel-dot 3.2s infinite alternate ease-in-out;
+        }
+        @keyframes breathe-pixel-dot {
+            0% { box-shadow: 0 0 10px rgba(196, 181, 253, 0.05); }
+            100% { box-shadow: 0 0 25px rgba(196, 181, 253, 0.15); border-color: rgba(196, 181, 253, 0.35); }
+        }
+
+        .residents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .resident-card {
+            background: rgba(10, 10, 16, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .resident-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 12px auto;
+            border: 2px solid var(--xyz-cyan);
+            background: radial-gradient(circle, var(--xyz-cyan) 0%, var(--ao-black-bg) 80%);
+            box-shadow: 0 0 15px rgba(0, 234, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.2rem;
+        }
+
+        .resident-name {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .resident-role {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            color: var(--glow-gold);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+
+        .resident-bio {
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        #build-section {
+            border-color: rgba(255, 0, 200, 0.15);
+            animation: breathe-mood-buddies 3.9s infinite alternate ease-in-out;
+        }
+        @keyframes breathe-mood-buddies {
+            0% { box-shadow: 0 0 10px rgba(255, 0, 200, 0.05); }
+            100% { box-shadow: 0 0 25px rgba(255, 0, 200, 0.15); border-color: rgba(255, 0, 200, 0.35); }
+        }
+
+        .terminal-block {
+            background: #050508;
+            border: 1px solid var(--in-build-magenta);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--in-build-magenta);
+            text-shadow: 0 0 5px rgba(255, 0, 200, 0.3);
+            position: relative;
+        }
+
+        .terminal-block::before {
+            content: "SYSTEM LOGS";
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: var(--ao-black-bg);
+            padding: 0 8px;
+            font-size: 0.65rem;
+            color: var(--in-build-magenta);
+            border: 1px solid var(--in-build-magenta);
+            border-radius: 3px;
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 0, 200, 0.3);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .terminal-line {
+            margin-bottom: 6px;
+        }
+
+        .terminal-line span {
+            color: #ffffff;
+            text-shadow: none;
+        }
+
+        .blink-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background: var(--in-build-magenta);
+            animation: cursor-blink 1s infinite steps(2, start);
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        @keyframes cursor-blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+        .gateway-section {
+            text-align: center;
+            padding: 50px 20px;
+            background: radial-gradient(circle, rgba(216, 174, 85, 0.1) 0%, transparent 70%);
+            border: 1px solid rgba(216, 174, 85, 0.25);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 0 35px rgba(216, 174, 85, 0.1);
+        }
+
+        .gateway-title {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--glow-gold);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(216, 174, 85, 0.4);
+        }
+
+        .gateway-desc {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.75);
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+            line-height: 1.6;
+        }
+
+        .gateway-btn {
+            display: inline-block;
+            background: transparent;
+            border: 2px solid var(--glow-gold);
+            color: #ffffff;
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 12px 36px;
+            border-radius: 50px;
+            text-decoration: none;
+            letter-spacing: 2px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 0 15px rgba(216, 174, 85, 0.15);
+        }
+
+        .gateway-btn:hover {
+            background: var(--glow-gold);
+            color: #000000;
+            box-shadow: 0 0 30px var(--glow-gold);
+            transform: scale(1.05);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            color: var(--xyz-cyan);
+            opacity: 0.6;
+            border-top: 1px solid rgba(0, 234, 255, 0.05);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-vortex"></div>
+
+    <div class="portal-wrapper">
+        
+        <div class="wallet-hud">
+            <div class="hud-left">
+                <div class="gold-ac-coin" id="ac-coin-icon">AC</div>
+                <div class="hud-text">
+                    <div class="hud-label">Sponsor Wallet Ledgers</div>
+                    <div class="hud-balance"><span id="ac-score">0</span> AC <span style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-left: 5px;">($0.00 Value)</span></div>
+                </div>
+            </div>
+            <div class="hud-right-telemetry">
+                <p>Ambassadors: Steward // Moderators: Patrol</p>
+                <p style="color: var(--xyz-cyan); margin-top: 4px;">Library World Homeworld — No Checkout</p>
+            </div>
+        </div>
+
+        <div class="hero-portal">
+            <div class="grid-plane"></div>
+            <div class="magenta-horizon"></div>
+            
+            <div class="triple-glow-ring" onclick="awardAnomCoins(5, 'Direct Core Connection');">
+                <div class="ring-outer"></div>
+                <div class="ring-middle"></div>
+                <div class="ring-inner">AO</div>
+            </div>
+
+            <div class="hero-text-block">
+                <h2>Library World Homestead</h2>
+                <p>System Map Node // Sanctuary Core Gateway</p>
+            </div>
+        </div>
+
+        <div class="quadrant-section" id="farm-section">
+            <div class="section-header-row">
+                <h2 class="section-title" style="color: var(--xyz-cyan);">🌱 Moonberry Farm Hub</h2>
+                <span class="tag-breathing" style="color: var(--xyz-cyan); border-color: rgba(0, 234, 255, 0.3);">Sassy Patrol // 4.1s Cycle</span>
+            </div>
+            
+            <div class="quest-board-grid">
+                
+                <div class="quest-card">
+                    <div class="quest-top">
+                        <div class="quest-meta">Task Field-Test // Sibling Cozy</div>
+                        <h3 class="quest-title">Pixel & Dot Farm</h3>
+                        <p class="quest-desc">Join Pixel as he builds structural blueprint bridges to guide his curious baby sister Dot safely across the Moonberry fields.</p>
+                    </div>
+                    <div class="quest-bottom">
+                        <span class="quest-yield">+12 Anom Coin</span>
+                        <button class="quest-btn" onclick="awardAnomCoins(12, 'Pixel & Dot Farm Field Test');">Execute Run</button>
+                    </div>
+                </div>
+
+                <div class="quest-card">
+                    <div class="quest-top">
+                        <div class="quest-meta">Patrol Line // Goggles On</div>
+                        <h3 class="quest-title">Clifford Patrol</h3>
+                        <p class="quest-desc">Command Logistics Director Clifford as he monitors active shipment coordinates and deploys SFW scent barriers.</p>
+                    </div>
+                    <div class="quest-bottom">
+                        <span class="quest-yield">+8 Anom Coin</span>
+                        <button class="quest-btn" onclick="awardAnomCoins(8, 'Clifford Patrol Scent Line');">Execute Run</button>
+                    </div>
+                </div>
+
+                <div class="quest-card">
+                    <div class="quest-top">
+                        <div class="quest-meta">Vault Heist // Executive Ed</div>
+                        <h3 class="quest-title">Tater Shelf Heist</h3>
+                        <p class="quest-desc">Help tactical chihuahua Tater navigate past FUBAR shelves to secure custom snack crates and bypass safety triggers.</p>
+                    </div>
+                    <div class="quest-bottom">
+                        <span class="quest-yield">+15 Anom Coin</span>
+                        <button class="quest-btn" onclick="awardAnomCoins(15, 'Tater Shelf Heist');">Execute Run</button>
+                    </div>
+                </div>
+
+                <div class="quest-card beta">
+                    <div class="quest-top">
+                        <div class="quest-meta" style="color: var(--in-build-magenta);">Vibe Co-Op // Beta Layer</div>
+                        <h3 class="quest-title" style="color: var(--in-build-magenta);">Mood Buddies</h3>
+                        <p class="quest-desc">Cooperative dual-headphone rhythm sync game. Synchronize neon pulses to hold space in the public lounges.</p>
+                    </div>
+                    <div class="quest-bottom">
+                        <span class="quest-yield" style="color: var(--in-build-magenta);">+10 Anom Coin</span>
+                        <button class="quest-btn" onclick="awardAnomCoins(10, 'Mood Buddies Sync');">Run Beta</button>
+                    </div>
+                </div>
+
+                <div class="quest-card beta">
+                    <div class="quest-top">
+                        <div class="quest-meta" style="color: var(--in-build-magenta);">Ambassador Check // Beta Layer</div>
+                        <h3 class="quest-title" style="color: var(--in-build-magenta);">Sassy Patrol Link</h3>
+                        <p class="quest-desc">Verify external redirect linkages to secure the boundaries of District C and protect incoming node connections.</p>
+                    </div>
+                    <div class="quest-bottom">
+                        <span class="quest-yield" style="color: var(--in-build-magenta);">+9 Anom Coin</span>
+                        <button class="quest-btn" onclick="awardAnomCoins(9, 'Sassy Patrol Link Check');">Run Beta</button>
+                    </div>
+                </div>
+
+                <div class="quest-card">
+                    <div class="quest-top">
+                        <div class="quest-meta">Mount Race // 2x Velocity</div>
+                        <h3 class="quest-title">Moonberry Hop Race</h3>
+                        <p class="quest-desc">Saddle up your customized flying mount at the Sassy Saloon and race across cosmic peaks at absolute peak speed.</p>
+                    </div>
+                    <div class="quest-bottom">
+                        <span class="quest-yield">+20 Anom Coin</span>
+                        <button class="quest-btn" onclick="awardAnomCoins(20, 'Moonberry Hop Mount Race');">Execute Run</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="quadrant-section" id="coloring-section">
+            <div class="section-header-row">
+                <h2 class="section-title" style="color: var(--glow-gold);">🎨 District C // Color Corner Sanctuary</h2>
+                <span class="tag-breathing" style="color: var(--glow-gold); border-color: rgba(216, 174, 85, 0.3);">Clifford & Tater // 3.6s Cycle</span>
+            </div>
+            
+            <p style="font-size: 0.95rem; color: rgba(255, 255, 255, 0.8); line-height: 1.6; margin-bottom: 25px;">
+                Welcome, Young Creator! Select any of our 5 distinct ridable mounts below to download their vector black-and-white outlines. Color your masterpiece, submit it to our Ambassador review board, and earn an immediate <strong>+25 Anom Coins</strong> bonus!
+            </p>
+
+            <div class="mount-scroller">
+                
+                <div class="mount-card">
+                    <div class="mount-canvas-frame">
+                        <div class="mount-line-art" style="background: radial-gradient(circle, #ffffff 40%, var(--xyz-cyan) 100%); border-radius: 12px; border: 2px dashed #000;"></div>
+                    </div>
+                    <div class="mount-title">Rainbow Unicorn</div>
+                    <div class="mount-type">Speed Mount</div>
+                    <div class="mount-actions">
+                        <button class="mount-btn download-outline" onclick="colorQuestTrigger('Rainbow Unicorn');">Download Outline</button>
+                        <button class="mount-btn" onclick="submitArtwork('Rainbow Unicorn');">Submit Art (+25 AC)</button>
+                    </div>
+                </div>
+
+                <div class="mount-card">
+                    <div class="mount-canvas-frame">
+                        <div class="mount-line-art" style="background: radial-gradient(circle, #ffffff 40%, var(--in-build-magenta) 100%); border-radius: 12px; border: 2px dashed #000;"></div>
+                    </div>
+                    <div class="mount-title">Cosmic Dragon</div>
+                    <div class="mount-type">Flight Mount</div>
+                    <div class="mount-actions">
+                        <button class="mount-btn download-outline" onclick="colorQuestTrigger('Cosmic Dragon');">Download Outline</button>
+                        <button class="mount-btn" onclick="submitArtwork('Cosmic Dragon');">Submit Art (+25 AC)</button>
+                    </div>
+                </div>
+
+                <div class="mount-card">
+                    <div class="mount-canvas-frame">
+                        <div class="mount-line-art" style="background: radial-gradient(circle, #ffffff 40%, var(--glow-gold) 100%); border-radius: 12px; border: 2px dashed #000;"></div>
+                    </div>
+                    <div class="mount-title">Armored Dark Pegasus</div>
+                    <div class="mount-type">Tank Mount</div>
+                    <div class="mount-actions">
+                        <button class="mount-btn download-outline" onclick="colorQuestTrigger('Armored Dark Pegasus');">Download Outline</button>
+                        <button class="mount-btn" onclick="submitArtwork('Armored Dark Pegasus');">Submit Art (+25 AC)</button>
+                    </div>
+                </div>
+
+                <div class="mount-card">
+                    <div class="mount-canvas-frame">
+                        <div class="mount-line-art" style="background: radial-gradient(circle, #ffffff 40%, #c4b5fd 100%); border-radius: 12px; border: 2px dashed #000;"></div>
+                    </div>
+                    <div class="mount-title">Armored Light Pegasus</div>
+                    <div class="mount-type">Scout Mount</div>
+                    <div class="mount-actions">
+                        <button class="mount-btn download-outline" onclick="colorQuestTrigger('Armored Light Pegasus');">Download Outline</button>
+                        <button class="mount-btn" onclick="submitArtwork('Armored Light Pegasus');">Submit Art (+25 AC)</button>
+                    </div>
+                </div>
+
+                <div class="mount-card">
+                    <div class="mount-canvas-frame">
+                        <div class="mount-line-art" style="background: radial-gradient(circle, #ffffff 40%, #c4b5fd 100%); border-radius: 12px; border: 2px dashed #000;"></div>
+                    </div>
+                    <div class="mount-title">White Unicorn</div>
+                    <div class="mount-type">Healer Mount</div>
+                    <div class="mount-actions">
+                        <button class="mount-btn download-outline" onclick="colorQuestTrigger('White Unicorn');">Download Outline</button>
+                        <button class="mount-btn" onclick="submitArtwork('White Unicorn');">Submit Art (+25 AC)</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="quadrant-section" id="house-section">
+            <div class="section-header-row">
+                <h2 class="section-title" style="color: #c4b5fd;">🏡 House Three Residents</h2>
+                <span class="tag-breathing" style="color: #c4b5fd; border-color: rgba(196, 181, 253, 0.3);">Pixel & Dot // 3.2s Cycle</span>
+            </div>
+            
+            <div class="residents-grid">
+                
+                <div class="resident-card">
+                    <div class="resident-avatar">🧑‍🚀</div>
+                    <h3 class="resident-name">Pixel & Dot</h3>
+                    <div class="resident-role">Cooperative Siblings</div>
+                    <p class="resident-bio">The faces of the brand! Modeling family dynamics, healthy respect, and cooperation through their celestial quests.</p>
+                </div>
+
+                <div class="resident-card">
+                    <div class="resident-avatar">🐕</div>
+                    <h3 class="resident-name">Tater Security</h3>
+                    <div class="resident-role">Tactical Guardian</div>
+                    <p class="resident-bio">Fitted with custom purple goggles and armor, Tater patrols the neighborhood to enforce SFW safety rules.</p>
+                </div>
+
+                <div class="resident-card">
+                    <div class="resident-avatar">🐈</div>
+                    <h3 class="resident-name">Clifford</h3>
+                    <div class="resident-role">Logistics Director</div>
+                    <p class="resident-bio">Wearing solid gold boss chains, Clifford keeps the shipping lines active and coordinates storefront fulfillment.</p>
+                </div>
+
+                <div class="resident-card">
+                    <div class="resident-avatar">🛡️</div>
+                    <h3 class="resident-name">Ambassadors</h3>
+                    <div class="resident-role">System Stewards</div>
+                    <p class="resident-bio">Steward-focused volunteers monitoring community safety and welcoming new explorers into the lounges.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="quadrant-section" id="build-section">
+            <div class="section-header-row">
+                <h2 class="section-title" style="color: var(--in-build-magenta);">🛠️ System Console // Compilation</h2>
+                <span class="tag-breathing" style="color: var(--in-build-magenta); border-color: rgba(255, 0, 200, 0.3);">Mood Buddies // 3.9s Cycle</span>
+            </div>
+            
+            <div class="terminal-block">
+                <div class="terminal-header">
+                    <span>Terminal Input: main/build-log</span>
+                    <span>Status: Vetting Compilers</span>
+                </div>
+                <p class="terminal-line">&gt; Loading Manus DB migrations... <span>Success.</span></p>
+                <p class="terminal-line">&gt; [SFW_AI] Sentinel alert matrix initial checkout... <span>Active.</span></p>
+                <p class="terminal-line">&gt; Still in Build: [Mood Memes Lounges]... <span style="color: #ffffff;">COMPILING_85%</span></p>
+                <p class="terminal-line">&gt; Still in Build: [Public Profiles Node]... <span style="color: #ffffff;">COMPILING_70%</span></p>
+                <p class="terminal-line">&gt; Still in Build: [Identity Shop Palette Override]... <span style="color: #ffffff;">STAGING</span></p>
+                <p class="terminal-line">&gt; Still in Build: [Feed Posts Soft-Delete Engine]... <span style="color: #ffffff;">VERIFYING</span></p>
+                <p class="terminal-line">&gt; Still in Build: [Ambassador Moderator Queue Shield]... <span style="color: #ffffff;">LOCKED_V5</span></p>
+                <p class="terminal-line">&gt; Connecting to gold boutique domain link (anomarsty.lol)... <span class="blink-cursor"></span></p>
+            </div>
+        </div>
+
+        <div class="gateway-section">
+            <h2 class="gateway-title">Boutique Marketplace</h2>
+            <p class="gateway-desc">
+                Ready to manifest your community points? Step through our outer orbit to purchase exclusive digital node backgrounds, high-end profile borders, and premium custom emotes.
+            </p>
+            <a href="https://anomarsty.lol/" class="gateway-btn">Visit Gold Store Portal (anomarsty.lol) →</a>
+        </div>
+
+    </div>
+
+    <footer>
+        © ANOMOLY247 // LIBRARY WORLD HOMESTEAD // EST. 2026 // ALL COIN IS SANCTUARY CURRENCY
+    </footer>
+
+    <script>
+        let earnedAC = 0;
+
+        function awardAnomCoins(amount, activityName) {
+            earnedAC += amount;
+            document.getElementById('ac-score').textContent = earnedAC;
+            
+            const coin = document.getElementById('ac-coin-icon');
+            coin.style.boxShadow = '0 0 35px var(--xyz-cyan)';
+            setTimeout(() => {
+                coin.style.boxShadow = '0 0 15px var(--glow-gold)';
+            }, 600);
+
+            alert(`Telemetry Confirmed! You earned +${amount} Anom Coins during "${activityName}". Total Wallet Balance: ${earnedAC} AC.`);
+        }
+
+        function colorQuestTrigger(mountName) {
+            alert(`SFW Vector Sheet for "${mountName}" initialized. Compiling transparent vector line-art outline download sequence... Complete.`);
+        }
+
+        function submitArtwork(mountName) {
+            earnedAC += 25;
+            document.getElementById('ac-score').textContent = earnedAC;
+            alert(`Ambassador Review Passed! Your custom colored design for "${mountName}" has been validated. +25 Anom Coins added to your ledger.`);
+        }
+    </script>
+</body>
+</html>
