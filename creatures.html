@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AO Universe — Companion Selection Hangar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ao-void-black: #000000;
+            --ao-deep-space: #0A0A10;
+            --neon-cyan: #00eaff;
+            --neon-magenta: #ff00c8;
+            --metallic-gold: #d8ae55;
+            --font-headline: "Space Mono", monospace;
+            --font-body: "Inter", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--ao-void-black);
+            color: #ffffff;
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle, #ffffff 0.7px, transparent 1.2px),
+                radial-gradient(circle, var(--metallic-gold) 0.9px, transparent 1.5px);
+            background-size: 180px 180px, 300px 300px;
+            opacity: 0.25;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(216, 174, 85, 0.15);
+            padding-bottom: 25px;
+        }
+
+        header h1 {
+            font-family: var(--font-headline);
+            font-weight: 700;
+            font-size: 2.8rem;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(0, 234, 255, 0.2);
+        }
+
+        header h1 span {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px rgba(0, 234, 255, 0.5);
+        }
+
+        .subtitle {
+            font-family: var(--font-headline);
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--neon-magenta);
+            margin-top: 8px;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            background: rgba(10, 10, 16, 0.85);
+            border: 1px solid rgba(216, 174, 85, 0.15);
+            border-radius: 50px;
+            padding: 10px 30px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+
+        .top-nav a {
+            font-family: var(--font-headline);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .top-nav a:hover {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px var(--neon-cyan);
+        }
+
+        .hangar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .creature-card {
+            background: rgba(10, 10, 16, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .creature-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top right, rgba(0, 234, 255, 0.03), transparent 60%);
+            pointer-events: none;
+        }
+
+        .creature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .creature-card.active-equip {
+            border-color: var(--metallic-gold);
+            box-shadow: 0 0 25px rgba(216, 174, 85, 0.15);
+        }
+
+        .creature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .creature-title {
+            font-family: var(--font-headline);
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .creature-role {
+            font-family: var(--font-headline);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid;
+        }
+
+        .avatar-frame {
+            width: 100%;
+            height: 160px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .creature-visual {
+            font-size: 4rem;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.15));
+            transition: transform 0.3s ease;
+        }
+
+        .creature-card:hover .creature-visual {
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        .stats-block {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 0.8rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .stat-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-family: var(--font-headline);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .stat-val {
+            font-family: var(--font-headline);
+            font-weight: bold;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: #ffffff;
+            font-family: var(--font-headline);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 10px;
+            width: 100%;
+            border-radius: 6px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--neon-cyan);
+            color: #000000;
+            box-shadow: 0 0 15px var(--neon-cyan);
+            font-weight: bold;
+        }
+
+        .radar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            background: radial-gradient(circle, transparent 30%, var(--ao-void-black) 70%);
+        }
+
+        .radar-sweep {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid;
+            opacity: 0;
+        }
+
+        @keyframes radar-ping {
+            0% { width: 100px; height: 100px; opacity: 1; }
+            100% { width: 1500px; height: 1500px; opacity: 0; }
+        }
+
+        .back-gateway-bar {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .back-gateway-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 36px;
+            border-radius: 50px;
+            background: rgba(0, 234, 255, 0.08);
+            border: 1px solid rgba(0, 234, 255, 0.25);
+            color: var(--neon-cyan);
+            text-decoration: none;
+            font-family: var(--font-headline);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .back-gateway-btn:hover {
+            background: rgba(0, 234, 255, 0.18);
+            box-shadow: 0 0 15px rgba(0, 234, 255, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            font-family: var(--font-headline);
+            font-size: 0.75rem;
+            color: var(--neon-cyan);
+            opacity: 0.5;
+            border-top: 1px solid rgba(0, 234, 255, 0.05);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="radar-overlay" id="radar-screen">
+        <div class="radar-sweep" id="ping-ring"></div>
+    </div>
+
+    <div class="container">
+        
+        <header>
+            <h1>CREATURE <span>HANGAR</span></h1>
+            <div class="subtitle">AO APEX COMPANIONS // SELECT YOUR CO-PILOT</div>
+        </header>
+
+        <nav class="top-nav">
+            <a href="index.html">Home Gateway</a>
+            <a href="arcade.html">District B Arcade</a>
+            <a href="creatures.html" style="color: var(--neon-cyan); text-shadow: 0 0 8px var(--neon-cyan);">Creatures Hangar</a>
+            <a href="https://anomarsty.lol/">Gold Boutique</a>
+        </nav>
+
+        <div class="hangar-grid">
+
+            <div class="creature-card" id="card-rainbow" style="border-color: rgba(0, 234, 255, 0.25);">
+                <div class="creature-header">
+                    <h2 class="creature-title" style="color: var(--neon-cyan);">Rainbow Wolf-Dragon</h2>
+                    <span class="creature-role" style="border-color: var(--neon-cyan); color: var(--neon-cyan);">2 Riders // ANOM + Tater</span>
+                </div>
+                <div class="avatar-frame">
+                    <div class="creature-visual">🐉</div>
+                </div>
+                <div class="stats-block">
+                    <div class="stat-row"><span class="stat-label">Velocity</span><span class="stat-val" style="color: var(--neon-cyan);">95%</span></div>
+                    <div class="stat-row"><span class="stat-label">Cooperation</span><span class="stat-val">100%</span></div>
+                    <div class="stat-row"><span class="stat-label">Aura Signature</span><span class="stat-val">Rainbow Cascade</span></div>
+                </div>
+                <button class="action-btn" onclick="selectCreature('rainbow', '#00eaff', 523.25);">Equip Mount</button>
+            </div>
+
+            <div class="creature-card" id="card-dark" style="border-color: rgba(196, 181, 253, 0.25);">
+                <div class="creature-header">
+                    <h2 class="creature-title" style="color: #c4b5fd;">Dark Wolf-Dragon</h2>
+                    <span class="creature-role" style="border-color: #c4b5fd; color: #c4b5fd;">1 Rider // Tater Solo</span>
+                </div>
+                <div class="avatar-frame">
+                    <div class="creature-visual">🐺</div>
+                </div>
+                <div class="stats-block">
+                    <div class="stat-row"><span class="stat-label">Agility</span><span class="stat-val" style="color: #c4b5fd;">90%</span></div>
+                    <div class="stat-row"><span class="stat-label">Detection Bar</span><span class="stat-val">85%</span></div>
+                    <div class="stat-row"><span class="stat-label">Aura Signature</span><span class="stat-val">Soft Violet Shadow</span></div>
+                </div>
+                <button class="action-btn" style="border-color: #c4b5fd;" onclick="selectCreature('dark', '#c4b5fd', 587.33);">Equip Mount</button>
+            </div>
+
+            <div class="creature-card" id="card-cosmic" style="border-color: rgba(255, 0, 200, 0.25);">
+                <div class="creature-header">
+                    <h2 class="creature-title" style="color: var(--neon-magenta);">Cosmic Armored Panda</h2>
+                    <span class="creature-role" style="border-color: var(--neon-magenta); color: var(--neon-magenta);">Panda Guardian</span>
+                </div>
+                <div class="avatar-frame">
+                    <div class="creature-visual">🐼</div>
+                </div>
+                <div class="stats-block">
+                    <div class="stat-row"><span class="stat-label">Armor Integrity</span><span class="stat-val" style="color: var(--neon-magenta);">98%</span></div>
+                    <div class="stat-row"><span class="stat-label">Atmosphere</span><span class="stat-val">Bubble Helmet Active</span></div>
+                    <div class="stat-row"><span class="stat-label">Aura Signature</span><span class="stat-val">Magenta Radar Sweep</span></div>
+                </div>
+                <button class="action-btn" style="border-color: var(--neon-magenta);" onclick="selectCreature('cosmic', '#ff00c8', 659.25);">Equip Mount</button>
+            </div>
+
+            <div class="creature-card" id="card-light" style="border-color: rgba(216, 174, 85, 0.25);">
+                <div class="creature-header">
+                    <h2 class="creature-title" style="color: var(--metallic-gold);">White Unicorn</h2>
+                    <span class="creature-role" style="border-color: var(--metallic-gold); color: var(--metallic-gold);">ANOM + Tater</span>
+                </div>
+                <div class="avatar-frame">
+                    <div class="creature-visual">🦄</div>
+                </div>
+                <div class="stats-block">
+                    <div class="stat-row"><span class="stat-label">Empathy Level</span><span class="stat-val" style="color: var(--metallic-gold);">100%</span></div>
+                    <div class="stat-row"><span class="stat-label">Grace Metric</span><span class="stat-val">95%</span></div>
+                    <div class="stat-row"><span class="stat-label">Aura Signature</span><span class="stat-val">Golden Halo</span></div>
+                </div>
+                <button class="action-btn" style="border-color: var(--metallic-gold);" onclick="selectCreature('light', '#d8ae55', 698.46);">Equip Mount</button>
+            </div>
+
+            <div class="creature-card" id="card-tc-space" style="border-color: rgba(0, 234, 255, 0.25);">
+                <div class="creature-header">
+                    <h2 class="creature-title" style="color: var(--neon-cyan);">Clifford & Tater Space</h2>
+                    <span class="creature-role" style="border-color: var(--neon-cyan); color: var(--neon-cyan);">Cyber Space Pets</span>
+                </div>
+                <div class="avatar-frame">
+                    <div class="creature-visual">🐕</div>
+                </div>
+                <div class="stats-block">
+                    <div class="stat-row"><span class="stat-label">Scent Barrier</span><span class="stat-val" style="color: var(--neon-cyan);">80%</span></div>
+                    <div class="stat-row"><span class="stat-label">Coop Chaos</span><span class="stat-val">SFW Security Guard</span></div>
+                    <div class="stat-row"><span class="stat-label">Aura Signature</span><span class="stat-val">Pulsing Goggles</span></div>
+                </div>
+                <button class="action-btn" onclick="selectCreature('tc-space', '#00eaff', 783.99);">Equip Team</button>
+            </div>
+
+            <div class="creature-card" id="card-siblings" style="border-color: rgba(255, 0, 200, 0.25);">
+                <div class="creature-header">
+                    <h2 class="creature-title" style="color: var(--neon-magenta);">Pixel & Dot Space</h2>
+                    <span class="creature-role" style="border-color: var(--neon-magenta); color: var(--neon-magenta);">Sibling Protectors</span>
+                </div>
+                <div class="avatar-frame">
+                    <div class="creature-visual">🧑‍🚀</div>
+                </div>
+                <div class="stats-block">
+                    <div class="stat-row"><span class="stat-label">Cooperation</span><span class="stat-val" style="color: var(--neon-magenta);">100%</span></div>
+                    <div class="stat-row"><span class="stat-label">Mentorship</span><span class="stat-val">Pixel & Dot Active</span></div>
+                    <div class="stat-row"><span class="stat-label">Aura Signature</span><span class="stat-val">Neon Glitch Edge</span></div>
+                </div>
+                <button class="action-btn" style="border-color: var(--neon-magenta);" onclick="selectCreature('siblings', '#ff00c8', 880.00);">Equip Team</button>
+            </div>
+
+            <div class="creature-card" id="card-alien-green" style="border-color: rgba(196, 181, 253, 0.25);">
+                <div class="creature-header">
+                    <h2 class="creature-title" style="color: #c4b5fd;">Alien Green</h2>
+                    <span class="creature-role" style="border-color: #c4b5fd; color: #c4b5fd;">Retro Helper</span>
+                </div>
+                <div class="avatar-frame">
+                    <div class="creature-visual">👽</div>
+                </div>
+                <div class="stats-block">
+                    <div class="stat-row"><span class="stat-label">Intelligenec</span><span class="stat-val" style="color: #c4b5fd;">75%</span></div>
+                    <div class="stat-row"><span class="stat-label">Radar Range</span><span class="stat-val">Standard Scout</span></div>
+                    <div class="stat-row"><span class="stat-label">Aura Signature</span><span class="stat-val">Neon Violet Spot</span></div>
+                </div>
+                <button class="action-btn" style="border-color: #c4b5fd;" onclick="selectCreature('alien-green', '#c4b5fd', 987.77);">Equip Ally</button>
+            </div>
+
+            <div class="creature-card" id="card-alien-blue" style="border-color: rgba(0, 234, 255, 0.25);">
+                <div class="creature-header">
+                    <h2 class="creature-title" style="color: var(--neon-cyan);">Alien Blue</h2>
+                    <span class="creature-role" style="border-color: var(--neon-cyan); color: var(--neon-cyan);">Retro Helper</span>
+                </div>
+                <div class="avatar-frame">
+                    <div class="creature-visual">👾</div>
+                </div>
+                <div class="stats-block">
+                    <div class="stat-row"><span class="stat-label">Intelligence</span><span class="stat-val" style="color: var(--neon-cyan);">75%</span></div>
+                    <div class="stat-row"><span class="stat-label">Flight Core</span><span class="stat-val">Standard Scout</span></div>
+                    <div class="stat-row"><span class="stat-label">Aura Signature</span><span class="stat-val">Cyan Wave Core</span></div>
+                </div>
+                <button class="action-btn" onclick="selectCreature('alien-blue', '#00eaff', 1046.50);">Equip Ally</button>
+            </div>
+
+            <div class="creature-card" id="card-robot" style="border-color: rgba(216, 174, 85, 0.25);">
+                <div class="creature-header">
+                    <h2 class="creature-title" style="color: var(--metallic-gold);">Retro Robot</h2>
+                    <span class="creature-role" style="border-color: var(--metallic-gold); color: var(--metallic-gold);">Hardware Drone</span>
+                </div>
+                <div class="avatar-frame">
+                    <div class="creature-visual">🤖</div>
+                </div>
+                <div class="stats-block">
+                    <div class="stat-row"><span class="stat-label">Sturdiness</span><span class="stat-val" style="color: var(--metallic-gold);">90%</span></div>
+                    <div class="stat-row"><span class="stat-label">Data Node</span><span class="stat-val">Logistics Carrier</span></div>
+                    <div class="stat-row"><span class="stat-label">Aura Signature</span><span class="stat-val">Bronze Spark</span></div>
+                </div>
+                <button class="action-btn" style="border-color: var(--metallic-gold);" onclick="selectCreature('robot', '#d8ae55', 1174.66);">Equip Ally</button>
+            </div>
+
+        </div>
+
+        <div class="back-gateway-bar">
+            <a href="index.html" class="back-gateway-btn">← Return to Library World Gateway</a>
+        </div>
+
+    </div>
+
+    <footer>
+        © ANOMOLY247 // CELESTIAL COMPANION DECK // DISTRICT B // EST. 2026
+    </footer>
+
+    <script>
+        let audioCtx = null;
+
+        function selectCreature(id, color, frequency) {
+            document.querySelectorAll('.creature-card').forEach(card => {
+                card.classList.remove('active-equip');
+            });
+
+            const activeCard = document.getElementById(`card-${id}`);
+            activeCard.classList.add('active-equip');
+
+            triggerRadarPing(color);
+            playSynthesizerTone(frequency);
+        }
+
+        function triggerRadarPing(color) {
+            const screen = document.getElementById('radar-screen');
+            const ping = document.getElementById('ping-ring');
+
+            screen.style.opacity = '1';
+            ping.style.borderColor = color;
+            ping.style.boxShadow = `0 0 35px ${color}, inset 0 0 15px ${color}`;
+            ping.style.animation = 'none';
+            
+            setTimeout(() => {
+                ping.style.animation = 'radar-ping 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards';
+            }, 10);
+
+            setTimeout(() => {
+                screen.style.opacity = '0';
+            }, 750);
+        }
+
+        function playSynthesizerTone(frequency) {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            try {
+                let osc = audioCtx.createOscillator();
+                let gainNode = audioCtx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+
+                osc.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } catch (e) {
+                console.log("Audio synthesis error:", e);
+            }
+        }
+    </script>
+</body>
+</html>
