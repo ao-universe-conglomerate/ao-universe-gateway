@@ -73,6 +73,34 @@
             width: 100%;
         }
 
+        .top-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            background: rgba(10, 10, 16, 0.85);
+            border: 1px solid rgba(216, 174, 85, 0.15);
+            border-radius: 50px;
+            padding: 10px 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+
+        .top-nav a {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .top-nav a:hover {
+            color: var(--xyz-cyan);
+            text-shadow: 0 0 8px var(--xyz-cyan);
+        }
+
         .wallet-hud {
             display: flex;
             justify-content: space-between;
@@ -730,6 +758,14 @@
 
     <div class="portal-wrapper">
         
+        <!-- Sleek Top Navigation Hub -->
+        <nav class="top-nav">
+            <a href="index.html" style="color: var(--xyz-cyan); text-shadow: 0 0 8px var(--xyz-cyan);">Home Gateway</a>
+            <a href="arcade.html">District B Arcade</a>
+            <a href="https://anomarsty.lol/">Gold Boutique</a>
+        </nav>
+
+        <!-- Live Telemetry HUD -->
         <div class="wallet-hud">
             <div class="hud-left">
                 <div class="gold-ac-coin" id="ac-coin-icon">AC</div>
@@ -744,6 +780,7 @@
             </div>
         </div>
 
+        <!-- Hero Modern Library Portal -->
         <div class="hero-portal">
             <div class="grid-plane"></div>
             <div class="magenta-horizon"></div>
@@ -760,6 +797,7 @@
             </div>
         </div>
 
+        <!-- Moonberry Farm (District B / Kids Planet) -->
         <div class="quadrant-section" id="farm-section">
             <div class="section-header-row">
                 <h2 class="section-title" style="color: var(--xyz-cyan);">🌱 Moonberry Farm Hub</h2>
@@ -979,6 +1017,7 @@
             </div>
         </div>
 
+        <!-- The Gold Store Link Gateway -->
         <div class="gateway-section">
             <h2 class="gateway-title">Boutique Marketplace</h2>
             <p class="gateway-desc">
